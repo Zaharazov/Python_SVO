@@ -48,8 +48,8 @@ def test_invalid_record_gives_explainable_error(
     with pytest.raises(SubmissionError) as info:
         parse_submission(raw)
 
-    assert info.value.code == code, info.value.to_dict()
-    assert info.value.field == field, info.value.to_dict()
+    assert info.value.code == code
+    assert info.value.field == field
     assert info.value.message
     assert raw == before
 

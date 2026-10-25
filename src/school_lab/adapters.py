@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from pathlib import Path
 
 from .errors import SubmissionError
-from .parser import parse_submission, parse_submission_line
+from .parser import parse_submission, decode_json
 from .services import Acceptance, SubmissionService
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -19,13 +19,6 @@ class ImportReport:
     duplicate: list[str] = dataclasses.field(default_factory=list)
     errors: list[LineError] = dataclasses.field(default_factory=list)
 
-    def to_dict(self) -> dict[str, object]:
-        return {
-            "accepted": self.accepted,
-            "duplicate": self.duplicate,
-            "errors": [dataclasses.asdict(error) for error in self.errors],
-        }
-
 class SubmissionAdapter:
     def __init__(self, service: SubmissionService) -> None:
         self._service = service
@@ -33,16 +26,13 @@ class SubmissionAdapter:
     def accept_payload(self, raw: object) -> Acceptance:
         return self._service.accept(parse_submission(raw))
 
-    def submit_line(self, line: str) -> Acceptance:
-        return self._service.accept(parse_submission_line(line))
-
     def import_lines(self, lines: Iterable[str]) -> ImportReport:
         report = ImportReport()
         for number, line in enumerate(lines, start=1):
             if not line.strip():
                 continue
             try:
-                result = self.submit_line(line)
+                result = self.accept_payload(decode_json(line))
             except SubmissionError as exc:
                 report.errors.append(LineError(number, exc.code.value, exc.field, exc.message))
                 continue

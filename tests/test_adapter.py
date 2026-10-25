@@ -63,16 +63,6 @@ def test_import_continues_after_bad_lines(
     stored = repository.get("sub-001")
     assert stored is not None and stored.text != "другое"
 
-def test_report_to_dict_is_json_serializable(adapter: SubmissionAdapter) -> None:
-    report = adapter.import_lines(["{broken"])
-    data = json.loads(json.dumps(report.to_dict(), ensure_ascii=False))
-    assert data["errors"][0] == {
-        "line": 1,
-        "code": "invalid_json",
-        "field": "json",
-        "message": data["errors"][0]["message"],
-    }
-
 def test_import_file(adapter: SubmissionAdapter, data_file: Path) -> None:
     report = adapter.import_file(data_file)
     assert len(report.accepted) == 12 and report.errors == []

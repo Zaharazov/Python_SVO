@@ -12,6 +12,3 @@ class SubmissionError(Exception):
         self.code = code
         self.field = field
         self.message = message
-
-    def to_dict(self) -> dict[str, str]:
-        return {"code": self.code.value, "field": self.field, "message": self.message}
