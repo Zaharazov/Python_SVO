@@ -5,6 +5,8 @@ import pytest
 
 from school_lab.errors import ErrorCode, SubmissionError
 from school_lab.parser import parse_submission, parse_submission_line
+from school_lab.models import Submission
+from school_lab.schemas import SubmissionInput
 
 MISSING = object()
 
@@ -66,3 +68,7 @@ def test_json_array_is_schema_error() -> None:
     with pytest.raises(SubmissionError) as info:
         parse_submission_line(json.dumps([1, 2]))
     assert info.value.code == ErrorCode.SCHEMA_ERROR
+
+def test_dto_converts_to_domain_object(raw: dict[str, object]) -> None:
+    domain = SubmissionInput.model_validate(raw).to_domain()
+    assert isinstance(domain, Submission)
