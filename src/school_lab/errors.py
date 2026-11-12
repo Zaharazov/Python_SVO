@@ -12,3 +12,6 @@ class SubmissionError(Exception):
         self.code = code
         self.field = field
         self.message = message
+
+class AnalysisFailure(Exception):
+    pass
