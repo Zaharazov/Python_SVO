@@ -4,9 +4,10 @@ from contextlib import AbstractContextManager, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
-
+import json
 from .errors import SubmissionError
 from .parser import decode_json
+from .models import Assignment
 
 @dataclass(frozen=True, slots=True)
 class SourceRecord:
@@ -49,3 +50,7 @@ class JSONLSource:
                 yield records()
         finally:
             self.last_closed = handle.closed
+
+def load_assignment(path: Path) -> Assignment:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return Assignment(data["assignment_id"], data["allowed_template"], tuple(data["requirements"]))
