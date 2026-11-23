@@ -6,6 +6,7 @@ import pytest
 from school_lab.adapters import SubmissionAdapter
 from school_lab.repositories import InMemorySubmissionRepository
 from school_lab.services import SubmissionService
+from school_lab.models import AnalysisContext, Assignment
 
 DATA_FILE = Path(__file__).parent.parent / "data" / "submissions.jsonl"
 
@@ -44,3 +45,8 @@ def data_file() -> Path:
 @pytest.fixture
 def public_lines(data_file: Path) -> list[str]:
     return data_file.read_text(encoding="utf-8").splitlines()
+
+@pytest.fixture
+def context() -> AnalysisContext:
+    assignment = Assignment("assignment-01", "from typing import Iterable\n", ("Наличие функции solve",))
+    return AnalysisContext(assignment)
